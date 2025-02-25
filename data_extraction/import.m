@@ -13,7 +13,7 @@ for i = 1 : length(files)
     try
         loop.name = files(i).name;
         loop.filepath = fullfile(folderPath, loop.name);
-        loop.data = readtable(loop.filepath, 'Delimiter', '\t', 'ReadVariableNames', true, 'Format', 'auto', 'HeaderLines', 0);
+        loop.data = readtable(loop.filepath, 'Delimiter', '\t', 'ReadVariableNames', true, 'Format', 'auto', 'HeaderLines', 0, 'VariableNamingRule', 'modify');
 
         varName = matlab.lang.makeValidName(loop.name(1:end-4));
 
