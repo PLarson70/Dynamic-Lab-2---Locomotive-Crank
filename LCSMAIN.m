@@ -131,3 +131,61 @@ title("Modeled vs experimental locomotive crank movement - Test 10");
 legend("Model", "Experimental")
 xlabel("\theta (rad)");
 ylabel("Velocity (cm/s)");
+
+%Subplots of the experimental and model
+figure();
+hold on;
+
+subplot(2,3,1)
+hold on;
+plot(mod.angle05, mod.v05);
+plot(exp05.angle, exp05.v);
+title("Collar Velocity vs Theta - 5.5 Voltage");
+legend("Model", "Experimental")
+xlabel("\theta (rad)");
+ylabel("Velocity (cm/s)");
+
+subplot(2,3,2)
+hold on;
+plot(mod.angle06, mod.v06);
+plot(exp06.angle, exp06.v);
+title("Collar Velocity vs Theta - 6.5 Voltage");
+legend("Model", "Experimental")
+xlabel("\theta (rad)");
+ylabel("Velocity (cm/s)");
+
+subplot(2,3,3)
+hold on;
+plot(mod.angle07, mod.v07);
+plot(exp07.angle, exp07.v);
+title("Collar Velocity vs Theta - 7.5 Voltage");
+legend("Model", "Experimental")
+xlabel("\theta (rad)");
+ylabel("Velocity (cm/s)");
+
+subplot(2,3,4)
+hold on;
+plot(mod.angle08, mod.v08);
+plot(exp08.angle, exp08.v);
+title("Collar Velocity vs Theta - 8.5 Voltage");
+legend("Model", "Experimental")
+xlabel("\theta (rad)");
+ylabel("Velocity (cm/s)");
+
+subplot(2,3,5)
+hold on;
+plot(mod.angle09, mod.v09);
+plot(exp09.angle, exp09.v);
+title("Collar Velocity vs Theta - 9.5 Voltage");
+legend("Model", "Experimental")
+xlabel("\theta (rad)");
+ylabel("Velocity (cm/s)");
+
+subplot(2,3,6)
+hold on;
+plot(mod.angle10, mod.v10);
+plot(exp10.angle, exp10.v);
+title("Collar Velocity vs Theta - 10.5 Voltage");
+legend("Model", "Experimental")
+xlabel("\theta (rad)");
+ylabel("Velocity (cm/s)");
