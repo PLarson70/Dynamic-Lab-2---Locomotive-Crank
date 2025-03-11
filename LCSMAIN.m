@@ -42,6 +42,72 @@ mod.v08 = LCSMODEL(mod.r, mod.d, mod.l, mod.angle08, mod.omega08); % cm / s
 mod.v09 = LCSMODEL(mod.r, mod.d, mod.l, mod.angle09, mod.omega09); % cm / s
 mod.v10 = LCSMODEL(mod.r, mod.d, mod.l, mod.angle10, mod.omega10); % cm / s
 
+%sub = sqrt(1-(mod.d-sin(mod.angle)*mod.r)^2);
+[r_error_05] = calculate_r(mod.angle05,mod.r,mod.d,mod.l,mod.omega05);
+[r_error_06] = calculate_r(mod.angle06,mod.r,mod.d,mod.l,mod.omega06);
+[r_error_07] = calculate_r(mod.angle07,mod.r,mod.d,mod.l,mod.omega07);
+[r_error_08] = calculate_r(mod.angle08,mod.r,mod.d,mod.l,mod.omega08);
+[r_error_09] = calculate_r(mod.angle09,mod.r,mod.d,mod.l,mod.omega09);
+[r_error_10] = calculate_r(mod.angle10,mod.r,mod.d,mod.l,mod.omega10);
+function r_error = calculate_r(theta, d, r, l,w)
+    % Calculate the components of the expression
+    term1 = -cos(theta) .* (d - sin(theta) .* r) ./ (l .* sqrt(1 - (d - sin(theta) .* r).^2 ./ l.^2));
+    
+    term2 = cos(theta) .* sin(theta) .* r ./ (l .* sqrt(1 - (d - sin(theta) .* r).^2 ./ l.^2));
+    
+    term3 = cos(theta) .* sin(theta) .* r .* (d - sin(theta) .* r).^2 ./ (l.^3 .* (1 - (d - sin(theta) .* r).^2 ./ l.^2).^(3/2));
+    
+    term4 = -sin(theta);
+
+    r_error = w.*(term1+term2+term3+term4);
+    
+    % Combine all terms to form w
+    %w = [term1; term2; term3; term4];
+end
+
+[d_error_05] = calculate_d(mod.angle05,mod.r,mod.d,mod.l,mod.omega05);
+[d_error_06] = calculate_r(mod.angle06,mod.r,mod.d,mod.l,mod.omega06);
+[d_error_07] = calculate_r(mod.angle07,mod.r,mod.d,mod.l,mod.omega07);
+[d_error_08] = calculate_r(mod.angle08,mod.r,mod.d,mod.l,mod.omega08);
+[d_error_09] = calculate_r(mod.angle09,mod.r,mod.d,mod.l,mod.omega09);
+[d_error_10] = calculate_r(mod.angle10,mod.r,mod.d,mod.l,mod.omega10);
+function d_error = calculate_d(theta, d, r, l,w)
+    % Calculate the components of the expression
+    numerator = -r .* w .* cos(theta);
+    denominator = l .* (1 - (d - r .* sin(theta)).^2 ./ l.^2).^(3/2);
+    
+    result = numerator ./ denominator;
+    d_error = result;
+    
+end
+[l_error_05] = calculate_l(mod.angle05,mod.r,mod.d,mod.l,mod.omega05);
+[l_error_06] = calculate_r(mod.angle06,mod.r,mod.d,mod.l,mod.omega06);
+[l_error_07] = calculate_r(mod.angle07,mod.r,mod.d,mod.l,mod.omega07);
+[l_error_08] = calculate_r(mod.angle08,mod.r,mod.d,mod.l,mod.omega08);
+[l_error_09] = calculate_r(mod.angle09,mod.r,mod.d,mod.l,mod.omega09);
+[l_error_10] = calculate_r(mod.angle10,mod.r,mod.d,mod.l,mod.omega10);
+function l_error = calculate_l(theta, d, r, l,w)
+    % Calculate the components of the expression
+    terml1 = (l^2 .* sqrt(1 - (d - sin(theta) .* r).^2 ./ l^2));
+    
+    terml2 = r.*cos(theta) .*(d-r.*sin(theta));
+    
+    terml3 = l^3.*(1 - (d - sin(theta) .* r).^2 ./ l^2).^3/2;
+
+    terml4 = l^4 .* (1 - (d - sin(theta) .* r).^2 ./ l^2).^3/2;
+    l_error = w.*((terml2./terml1)+(terml3./terml4));
+    
+end
+
+r_uncertainity = 0.05;
+d_uncertainity = 0.05;
+l_uncertainity = 0.05;
+sigma_full_05=sqrt(((r_error_05.^2).*(r_uncertainity^2))+((d_error_05.^2).*(d_uncertainity^2))+((l_error_05.^2).*(l_uncertainity^2)));
+sigma_full_06=sqrt(((r_error_06.^2).*(r_uncertainity^2))+((d_error_06.^2).*(d_uncertainity^2))+((l_error_06.^2).*(l_uncertainity^2)));
+sigma_full_07=sqrt(((r_error_07.^2).*(r_uncertainity^2))+((d_error_07.^2).*(d_uncertainity^2))+((l_error_07.^2).*(l_uncertainity^2)));
+sigma_full_08=sqrt(((r_error_08.^2).*(r_uncertainity^2))+((d_error_08.^2).*(d_uncertainity^2))+((l_error_08.^2).*(l_uncertainity^2)));
+sigma_full_09=sqrt(((r_error_09.^2).*(r_uncertainity^2))+((d_error_09.^2).*(d_uncertainity^2))+((l_error_09.^2).*(l_uncertainity^2)));
+sigma_full_10=sqrt(((r_error_10.^2).*(r_uncertainity^2))+((d_error_10.^2).*(d_uncertainity^2))+((l_error_10.^2).*(l_uncertainity^2)));
 %% Plot - Test 05
 
 % Velocity plotted as a function of angle
@@ -50,6 +116,8 @@ figure();
 hold on;
 plot(mod.angle05, mod.v05);
 plot(exp05.angle, exp05.v);
+plot(mod.angle05,mod.v05+sigma_full_05, 'g--');
+plot(mod.angle05,mod.v05-sigma_full_05,'g--');
 
 % Graph metadata
 title("Modeled vs experimental locomotive crank movement - Test 05");
@@ -65,6 +133,8 @@ figure();
 hold on;
 plot(mod.angle06, mod.v06);
 plot(exp06.angle, exp06.v);
+plot(mod.angle06,mod.v06+sigma_full_06, 'g--');
+plot(mod.angle06,mod.v06-sigma_full_06,'g--');
 
 % Graph metadata
 title("Modeled vs experimental locomotive crank movement - Test 06");
@@ -80,6 +150,8 @@ figure();
 hold on;
 plot(mod.angle07, mod.v07);
 plot(exp07.angle, exp07.v);
+plot(mod.angle07,mod.v07+sigma_full_07, 'g--');
+plot(mod.angle07,mod.v07-sigma_full_07,'g--');
 
 % Graph metadata
 title("Modeled vs experimental locomotive crank movement - Test 07");
@@ -95,6 +167,8 @@ figure();
 hold on;
 plot(mod.angle08, mod.v08);
 plot(exp08.angle, exp08.v);
+plot(mod.angle08,mod.v08+sigma_full_08, 'g--');
+plot(mod.angle08,mod.v08-sigma_full_08,'g--');
 
 % Graph metadata
 title("Modeled vs experimental locomotive crank movement - Test 08");
@@ -110,6 +184,8 @@ figure();
 hold on;
 plot(mod.angle09, mod.v09);
 plot(exp09.angle, exp09.v);
+plot(mod.angle09,mod.v09+sigma_full_09, 'g--');
+plot(mod.angle09,mod.v09-sigma_full_09,'g--');
 
 % Graph metadata
 title("Modeled vs experimental locomotive crank movement - Test 09");
@@ -125,6 +201,8 @@ figure();
 hold on;
 plot(mod.angle10, mod.v10);
 plot(exp10.angle, exp10.v);
+plot(mod.angle10,mod.v10+sigma_full_10, 'g--');
+plot(mod.angle10,mod.v10-sigma_full_10,'g--');
 
 % Graph metadata
 title("Modeled vs experimental locomotive crank movement - Test 10");
@@ -132,7 +210,7 @@ legend("Model", "Experimental")
 xlabel("\theta (rad)");
 ylabel("Velocity (cm/s)");
 
-%Subplots of the experimental and model
+
 figure();
 hold on;
 
