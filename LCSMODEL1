@@ -1,0 +1,9 @@
+function [v_mod] = LCSMODEL1(r, d, l, theta, w)
+
+    % Beta units: degrees
+    beta = asin((d - (r .* sin(theta))) / l);
+
+    % Velocity of the crank units: cm/s
+    v_mod = ((cos(theta) .* tan(beta)) + (sin(theta))) .* -w * (r);
+
+end
