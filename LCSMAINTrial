@@ -1,0 +1,105 @@
+%% LSCMAIN
+%Refined with chat
+clc;
+clear all;
+close all;
+voltages = ["5pt5", "6pt5", "7pt5", "8pt5", "9pt5", "10pt5"];
+r  = 7.6; % cm
+d = 17.2; % cm
+l = 25.35; % cm
+w = 5; %rad/s
+uncertainity = 0.05; 
+num_points = 360*6+1;
+theta = [];
+
+for i=1:num_points
+    theta(i) = i;
+    i=i+1;
+end
+theta = deg2rad(theta);
+
+trail_v = LCSMODEL1(r, d, l, theta, w);
+
+figure()
+hold on;
+plot(theta',trail_v');
+title('Collar Velocity from Model');
+xlabel('\theta (rad)');
+ylabel('Velocity (cm/s)');
+
+for i = 1:length(voltages)
+    testName = "Test1_" + voltages(i) + "V";
+    [theta_exp{i}, w_exp{i}, v_exp{i},time{i}] = LCSDATA1(testName);
+    v_b{i} = LCSMODEL1(r, d, l, theta_exp{i}, w_exp{i});
+end
+
+% Plot individual comparisons
+for i = 1:length(voltages)
+    figure();
+    hold on;
+    plot(theta_exp{i}, v_exp{i});
+    plot(theta_exp{i}, v_b{i});
+    title(['Mod vs Exp ' num2str(voltages(i)) 'V']);
+    legend('Experimental', 'Theoretical');
+    hold off;
+end
+
+%% Subplot
+figure();
+hold on;
+
+for i = 1:length(voltages)
+    subplot(2, 3, i)
+    sgtitle('Collar Velocity: Model vs Experiment')
+    hold on;
+    plot(theta_exp{i}, v_exp{i});
+    plot(theta_exp{i}, v_b{i});
+    title([num2str(voltages(i)) ' Voltage']);
+    legend('Model', 'Experimental');
+    xlabel('\theta (rad)');
+    ylabel('Velocity (cm/s)');
+
+end
+hold off;
+%% Signed Residuals
+for i = 1:length(voltages)
+    residual_sign{i} = v_exp{i} - v_b{i};
+    mean_sign{i} = mean(residual_sign{i});
+end
+
+%% Signed Residuals Plot
+figure();
+hold on;
+
+for j = 1:length(voltages)
+    subplot(2, 3, j)
+    sgtitle('Signed Residuals vs Time');
+    hold on;
+    plot(time{j}, residual_sign{j});
+    yline(mean_sign{j});
+    title([num2str(voltages(j)) ' Voltage']);
+    legend('Sign Residual', 'Mean');
+    xlabel('Time (s)');
+    ylabel('Velocity (cm/s)');
+end
+%% Absolute Residuals
+for i = 1:length(voltages)
+    absolute_sign{i} = abs(residual_sign{i});
+    mean_abs{i} = mean(absolute_sign{i});
+end
+
+%% Signed Residuals Plot
+figure();
+hold on;
+
+for k = 1:length(voltages)
+    subplot(2, 3, k)
+    sgtitle('Absolute Residuals vs Time');
+    hold on;
+    plot(time{k}, absolute_sign{k});
+    yline(mean_abs{k});
+    title([num2str(voltages(k)) ' Voltage']);
+    legend('Absolute Residual', 'Mean');
+    xlabel('Time (s)');
+    ylabel('Velocity (cm/s)');
+end
