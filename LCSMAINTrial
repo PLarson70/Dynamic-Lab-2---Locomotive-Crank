@@ -1,36 +1,49 @@
-%% LSCMAIN
+%{
+OBJECTIVE: Finding and comparing the experimental and model velocity of the collar
+over time and theta
+%}
 clc;
 clear all;
 close all;
+
+%% Declaring Constants
+% declaring all voltages
 voltages = ["5pt5", "6pt5", "7pt5", "8pt5", "9pt5", "10pt5"];
+
+% Defining constant measurements (team measured)
 r  = 7.6; % cm
 d = 17.2; % cm
 l = 25.35; % cm
+uncertainity = 0.05;
+
+%% Model
+
+%Checking the model derivations over 6 revolutions
 w = 5; %rad/s
-uncertainity = 0.05; 
-num_points = 360*6+1;
-theta = [0:360*6];
+theta = [0:360*6]; %degrees
+theta = deg2rad(theta); %radians
+check_v = LCSMODEL1(r, d, l, theta, w);
 
-theta = deg2rad(theta);
-
-trail_v = LCSMODEL1(r, d, l, theta, w);
-
-figure()
+%% Plotting Model Check
+figure(1)
 hold on;
-plot(theta,trail_v);
+plot(theta,check_v);
 title('Collar Velocity from Model');
 xlabel('\theta (rad)');
 ylabel('Velocity (cm/s)');
-
+hold off;
+%% Importing Experimental Data and Finding Model Data
 for i = 1:length(voltages)
     testName = "Test1_" + voltages(i) + "V";
+    % Adjusted Experimental Data
     [theta_exp{i}, w_exp{i}, v_exp{i},time{i}] = LCSDATA1(testName);
+    % Model Data with experimental theta and omega
     v_b{i} = LCSMODEL1(r, d, l, theta_exp{i}, w_exp{i});
 end
 
-% Plot individual comparisons
+%% Plotting Experimental vs Model Data for each Voltage 
 for i = 1:length(voltages)
-    figure();
+    figure(i+7);
     hold on;
     plot(theta_exp{i}, v_exp{i});
     plot(theta_exp{i}, v_b{i});
@@ -39,10 +52,9 @@ for i = 1:length(voltages)
     hold off;
 end
 
-%% Subplot
-figure();
+%% Plotting Experimental vs Model Data for each Voltage - Subplot
+figure(2);
 hold on;
-
 for i = 1:length(voltages)
     subplot(2, 3, i)
     sgtitle('Collar Velocity: Model vs Experiment')
@@ -58,14 +70,16 @@ end
 hold off;
 %% Signed Residuals
 for i = 1:length(voltages)
+    % difference in experimental - model velocity
     residual_sign{i} = v_exp{i} - v_b{i};
     %standard deviation and mean of signed residual
-    [sign_Std{i}, sign_mean{i}] = std(residual_sign{i});
+    sign_Std{i}= std(residual_sign{i});
+    sign_mean{i} = mean(residual_sign{i});
 
 end
 
 %% Signed Residuals Plot
-figure();
+figure(3);
 hold on;
 
 for j = 1:length(voltages)
@@ -79,15 +93,18 @@ for j = 1:length(voltages)
     xlabel('Time (s)');
     ylabel('Velocity (cm/s)');
 end
+hold off;
 %% Absolute Residuals
 for i = 1:length(voltages)
+    % absolute value of experimental - model velocity
     absolute{i} = abs(residual_sign{i});
     %standard deviation and mean of absolute residual
-    [abs_Std{i}, abs_mean{i}] = std(absolute{i});
+    abs_Std{i} = std(absolute{i});
+    abs_mean{i} = mean(absolute{i});
 end
 
-%% Signed Residuals Plot
-figure();
+%% Absolute Residuals Plot
+figure(4);
 hold on;
 
 for k = 1:length(voltages)
@@ -101,20 +118,23 @@ for k = 1:length(voltages)
     xlabel('Time (s)');
     ylabel('Velocity (cm/s)');
 end
-
+hold off;
 %% Plotting Voltage 7.5 of Signed, Absolute Residual vs Time
-figure()
+figure(5)
 hold on;
+%absolute residual of 7.5 V
 plot(time{1,3}, absolute{1,3});
+%signed residual of 7.5 V
 plot(time{1,3}, residual_sign{1,3});
 title('Signed and Absolute Residuals vs Time');
 legend('Absolute Residual', 'Signed Residual');
 xlabel('Time (s)');
 ylabel('Velocity (cm/s)');
-
+hold off;
 %% Comparison Plot of Signed Residual for all Voltages - Time
-figure()
+figure(6)
 hold on;
+% Comparing all voltages signed residuals over time
 plot(time{1,1}, residual_sign{1,1});
 plot(time{1,2}, residual_sign{1,2});
 plot(time{1,3}, residual_sign{1,3});
@@ -125,10 +145,11 @@ title('Comparison of Signed Residuals for all Voltages over Time');
 legend('5.5 Voltage', '6.5 Voltage','7.5 Voltage','8.5 Voltage','9.5 Voltage','10.5 Voltage');
 xlabel('Time (s)');
 ylabel('Velocity (cm/s)');
-
+hold off;
 %% Comparison Plot of Signed Residual for all Voltages - Theta
-figure()
+figure(7)
 hold on;
+% Comparing all voltages signed residuals over theta
 plot(theta_exp{1,1}, residual_sign{1,1});
 plot(theta_exp{1,2}, residual_sign{1,2});
 plot(theta_exp{1,3}, residual_sign{1,3});
@@ -140,3 +161,4 @@ legend('5.5 Voltage', '6.5 Voltage','7.5 Voltage','8.5 Voltage','9.5 Voltage','1
 xlabel('\theta (rad)');
 ylabel('Velocity (cm/s)');
 
+hold off;
