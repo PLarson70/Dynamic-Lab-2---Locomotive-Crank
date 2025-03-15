@@ -1,9 +1,9 @@
 function [v_mod] = LCSMODEL1(r, d, l, theta, w)
+% Calculation of the model velocity of the collar
+    % Beta
+    beta = asin((d - (r .* sin(theta))) / l); %degrees
 
-    % Beta units: degrees
-    beta = asin((d - (r .* sin(theta))) / l);
-
-    % Velocity of the crank units: cm/s
-    v_mod = ((cos(theta) .* tan(beta)) + (sin(theta))) .* -w * (r);
+    % Velocity of the crank
+    v_mod = ((cos(theta) .* tan(beta)) + (sin(theta))) .* -w * (r); %cm/s
 
 end
