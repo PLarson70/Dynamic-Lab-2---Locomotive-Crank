@@ -9,19 +9,15 @@ l = 25.35; % cm
 w = 5; %rad/s
 uncertainity = 0.05; 
 num_points = 360*6+1;
-theta = [];
+theta = [0:360*6];
 
-for i=1:num_points
-    theta(i) = i;
-    i=i+1;
-end
 theta = deg2rad(theta);
 
 trail_v = LCSMODEL1(r, d, l, theta, w);
 
 figure()
 hold on;
-plot(theta',trail_v');
+plot(theta,trail_v);
 title('Collar Velocity from Model');
 xlabel('\theta (rad)');
 ylabel('Velocity (cm/s)');
@@ -116,7 +112,7 @@ legend('Absolute Residual', 'Signed Residual');
 xlabel('Time (s)');
 ylabel('Velocity (cm/s)');
 
-%% Comparison Plot of Signed Residual for all Voltages
+%% Comparison Plot of Signed Residual for all Voltages - Time
 figure()
 hold on;
 plot(time{1,1}, residual_sign{1,1});
@@ -125,7 +121,22 @@ plot(time{1,3}, residual_sign{1,3});
 plot(time{1,4}, residual_sign{1,4});
 plot(time{1,5}, residual_sign{1,5});
 plot(time{1,6}, residual_sign{1,6});
-title('Comparison of Signed Residuals for all Voltages');
+title('Comparison of Signed Residuals for all Voltages over Time');
 legend('5.5 Voltage', '6.5 Voltage','7.5 Voltage','8.5 Voltage','9.5 Voltage','10.5 Voltage');
 xlabel('Time (s)');
 ylabel('Velocity (cm/s)');
+
+%% Comparison Plot of Signed Residual for all Voltages - Theta
+figure()
+hold on;
+plot(theta_exp{1,1}, residual_sign{1,1});
+plot(theta_exp{1,2}, residual_sign{1,2});
+plot(theta_exp{1,3}, residual_sign{1,3});
+plot(theta_exp{1,4}, residual_sign{1,4});
+plot(theta_exp{1,5}, residual_sign{1,5});
+plot(theta_exp{1,6}, residual_sign{1,6});
+title('Comparison of Signed Residuals for all Voltages over \theta');
+legend('5.5 Voltage', '6.5 Voltage','7.5 Voltage','8.5 Voltage','9.5 Voltage','10.5 Voltage');
+xlabel('\theta (rad)');
+ylabel('Velocity (cm/s)');
+
