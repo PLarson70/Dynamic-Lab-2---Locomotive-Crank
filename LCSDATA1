@@ -1,23 +1,32 @@
 function [theta_exp,w_exp,v_exp,time] = LCSDATA1(filename)
-%UNTITLED6 Summary of this function goes here
-%   Detailed explanation goes here
+% Offsets the experimental data so that it measures from theta ~= 0 degree
+% to 6 revolutions
+
+%Read in data
 exp_data = readmatrix(filename);
-v_exp = exp_data(:,3);
+%organize and seperate data
+slide = exp_data(:,3);
 theta_exp = exp_data(:,2);
-%start = find(v_exp<=0,1);
-for i= 1:length(v_exp)
-    if v_exp(i)<v_exp(i+1)
+
+%finding when slide switches to positive to negative
+for i= 1:length(slide)
+    %finding when velocity switches to positive to negative
+    if slide(i)<slide(i+1)
         start_idx = i;
+        % find the idx of the minimum value if there is no switch
         if start_idx == 1
-            min_val = min(v_exp(1:20));
-            start_idx = find(v_exp == min_val);
+            %finds where the collar arm is at ~ 0 degrees
+            min_val = min(slide(1:20));
+            start_idx = find(slide == min_val);
         end
         break;
     end
 end
+%offsetting theta to start at 0 degrees
 offset = (theta_exp(start_idx) - 152.5)/360;
 theta_exp = theta_exp - (offset*360);
 
+%Finding the end of 6 revolutions
 end_idx=0;
 for j = 1:length(theta_exp)
     if (theta_exp(j)> ((6*360)+theta_exp(start_idx)))
@@ -26,14 +35,10 @@ for j = 1:length(theta_exp)
     end
 end
 
-theta_exp = deg2rad(theta_exp(start_idx:end_idx));
-w_exp = deg2rad(exp_data(start_idx:end_idx,4));
-v_exp = exp_data(start_idx:end_idx,5) ./10;
-time = exp_data(start_idx:end_idx,1) ./1000;
+%re-adjusting data
+theta_exp = deg2rad(theta_exp(start_idx:end_idx)); %rad
+w_exp = deg2rad(exp_data(start_idx:end_idx,4)); %rad/s
+v_exp = exp_data(start_idx:end_idx,5) ./10; % cm/s
+time = exp_data(start_idx:end_idx,1) ./1000; %s
 
-
-% 
-% offset = find(v_exp<=0,1);
-% theta_exp = theta_exp(1) - offset*152.5;
-% theta_exp = deg2rad(theta_exp);
 end
